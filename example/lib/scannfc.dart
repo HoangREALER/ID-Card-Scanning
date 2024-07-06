@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
@@ -36,6 +38,7 @@ class _MrtdHomePageState extends State<ScanIdCard> {
   final _doe = TextEditingController(); // date of doc expiry
 
   MrtdData? _mrtdData;
+  final _mrtdDataDump = {};
 
   final NfcProvider _nfc = NfcProvider();
   // ignore: unused_field
@@ -181,15 +184,18 @@ class _MrtdHomePageState extends State<ScanIdCard> {
       }
       _nfc.setIosAlertMessage(formatProgressMsg("Reading EF.COM ...", 0));
       mrtdData.com = await passport.readEfCOM();
+      _mrtdDataDump["com"] = base64Encode(mrtdData.com!.toBytes());
 
       _nfc.setIosAlertMessage(formatProgressMsg("Reading Data Groups ...", 20));
 
       if (mrtdData.com!.dgTags.contains(EfDG1.TAG)) {
         mrtdData.dg1 = await passport.readEfDG1();
+        _mrtdDataDump["dg1"] = base64Encode(mrtdData.dg1!.toBytes());
       }
 
       if (mrtdData.com!.dgTags.contains(EfDG2.TAG)) {
         mrtdData.dg2 = await passport.readEfDG2();
+        _mrtdDataDump["dg2"] = base64Encode(mrtdData.dg2!.toBytes());
       }
 
       // To read DG3 and DG4 session has to be established with CVCA certificate (not supported).
@@ -203,57 +209,71 @@ class _MrtdHomePageState extends State<ScanIdCard> {
 
       if (mrtdData.com!.dgTags.contains(EfDG5.TAG)) {
         mrtdData.dg5 = await passport.readEfDG5();
+        _mrtdDataDump["dg5"] = base64Encode(mrtdData.dg5!.toBytes());
       }
 
       if (mrtdData.com!.dgTags.contains(EfDG6.TAG)) {
         mrtdData.dg6 = await passport.readEfDG6();
+        _mrtdDataDump["dg6"] = base64Encode(mrtdData.dg6!.toBytes());
       }
 
       if (mrtdData.com!.dgTags.contains(EfDG7.TAG)) {
         mrtdData.dg7 = await passport.readEfDG7();
+        _mrtdDataDump["dg7"] = base64Encode(mrtdData.dg7!.toBytes());
       }
 
       if (mrtdData.com!.dgTags.contains(EfDG8.TAG)) {
         mrtdData.dg8 = await passport.readEfDG8();
+        _mrtdDataDump["dg8"] = base64Encode(mrtdData.dg8!.toBytes());
       }
 
       if (mrtdData.com!.dgTags.contains(EfDG9.TAG)) {
         mrtdData.dg9 = await passport.readEfDG9();
+        _mrtdDataDump["dg9"] = base64Encode(mrtdData.dg9!.toBytes());
       }
 
       if (mrtdData.com!.dgTags.contains(EfDG10.TAG)) {
         mrtdData.dg10 = await passport.readEfDG10();
+        _mrtdDataDump["dg10"] = base64Encode(mrtdData.dg10!.toBytes());
       }
 
       if (mrtdData.com!.dgTags.contains(EfDG11.TAG)) {
         mrtdData.dg11 = await passport.readEfDG11();
+        _mrtdDataDump["dg11"] = base64Encode(mrtdData.dg11!.toBytes());
       }
 
       if (mrtdData.com!.dgTags.contains(EfDG12.TAG)) {
         mrtdData.dg12 = await passport.readEfDG12();
+        _mrtdDataDump["dg12"] = base64Encode(mrtdData.dg12!.toBytes());
       }
 
       if (mrtdData.com!.dgTags.contains(EfDG13.TAG)) {
         mrtdData.dg13 = await passport.readEfDG13();
+        _mrtdDataDump["dg13"] = base64Encode(mrtdData.dg13!.toBytes());
       }
 
       if (mrtdData.com!.dgTags.contains(EfDG14.TAG)) {
         mrtdData.dg14 = await passport.readEfDG14();
+        _mrtdDataDump["dg14"] = base64Encode(mrtdData.dg14!.toBytes());
       }
 
       if (mrtdData.com!.dgTags.contains(EfDG15.TAG)) {
         mrtdData.dg15 = await passport.readEfDG15();
         _nfc.setIosAlertMessage(formatProgressMsg("Doing AA ...", 60));
         mrtdData.authData = Uint8List.fromList([0, 1, 2, 3, 4, 5, 6, 7]);
+        _mrtdDataDump["authData"] = base64Encode(mrtdData.authData!);
         mrtdData.aaSig = await passport.activeAuthenticate(mrtdData.authData!);
+        _mrtdDataDump["aaSig"] = base64Encode(mrtdData.aaSig!);
       }
 
       if (mrtdData.com!.dgTags.contains(EfDG16.TAG)) {
         mrtdData.dg16 = await passport.readEfDG16();
+        _mrtdDataDump["dg16"] = base64Encode(mrtdData.dg16!.toBytes());
       }
 
       _nfc.setIosAlertMessage(formatProgressMsg("Reading EF.SOD ...", 80));
       mrtdData.sod = await passport.readEfSOD();
+      _mrtdDataDump["sod"] = base64Encode(mrtdData.sod!.toBytes());
 
       setState(() {
         _mrtdData = mrtdData;
@@ -366,7 +386,7 @@ class _MrtdHomePageState extends State<ScanIdCard> {
       list.add(_makeMrtdDataWidget(
           header: 'EF.SOD',
           collapsedText: '',
-          dataText: "verify result: ${verify_sod(_mrtdData!)}"));
+          dataText: "${_mrtdData!.sod!.toBytes().hex()}\n\nverify result: ${verify_sod(_mrtdData!)}"));
     }
 
     if (_mrtdData!.com != null) {
@@ -380,7 +400,7 @@ class _MrtdHomePageState extends State<ScanIdCard> {
       list.add(_makeMrtdDataWidget(
           header: 'EF.DG1',
           collapsedText: '',
-          dataText: formatMRZ(_mrtdData!.dg1!.mrz)));
+          dataText: '${_mrtdData!.dg1!.toBytes().hex()}\n\n Data\n\n${formatMRZ(_mrtdData!.dg1!.mrz)}'));
     }
 
     if (_mrtdData!.dg2 != null) {
@@ -465,7 +485,7 @@ class _MrtdHomePageState extends State<ScanIdCard> {
       list.add(_makeMrtdDataWidget(
           header: 'EF.DG13',
           collapsedText: '',
-          dataText: formatDG13(_mrtdData!.dg13!)));
+          dataText: '${_mrtdData!.dg13!.toBytes().hex()}\n\n${formatDG13(_mrtdData!.dg13!)}'));
     }
 
     if (_mrtdData!.dg14 != null) {
@@ -479,7 +499,7 @@ class _MrtdHomePageState extends State<ScanIdCard> {
       list.add(_makeMrtdDataWidget(
           header: 'EF.DG15',
           collapsedText: '',
-          dataText: formatDG15(_mrtdData!.dg15!)));
+          dataText: '${_mrtdData!.dg14!.toBytes().hex()}\n\nInformation:\n${formatDG15(_mrtdData!.dg15!)}'));
     }
 
     if (_mrtdData!.aaSig != null) {
@@ -502,8 +522,14 @@ class _MrtdHomePageState extends State<ScanIdCard> {
     return list;
   }
 
+  Map mrtdDump({bool excludeDg2 = false}) {
+    final tmp = _mrtdDataDump.map((key, value) => MapEntry(key, value));
+    tmp.removeWhere((key, value) => (excludeDg2 && key == "dg2") || (!excludeDg2 && key != "dg2"));
+    return tmp;
+  }
+
   PlatformScaffold _buildPage(BuildContext context) => PlatformScaffold(
-      appBar: PlatformAppBar(title: Text('BShield ID card verifier')),
+      appBar: PlatformAppBar(title: Text('Em Hoàng\'s ID card verifier')),
       iosContentPadding: false,
       iosContentBottomPadding: false,
       body: Material(
@@ -560,7 +586,57 @@ class _MrtdHomePageState extends State<ScanIdCard> {
                                         child: Column(
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
-                                            children: _mrtdDataWidgets()))
+                                            children: _mrtdDataWidgets())),
+                                    Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                                      children: [
+                                            ElevatedButton(
+                                              onPressed: () async {
+                                                try {
+                                                  if (_mrtdData == null) return;
+                                                  final data = mrtdDump(excludeDg2: true);
+                                                  _log.debug("Json dump: ${jsonEncode(data)}");
+                                                  await Clipboard.setData(
+                                                      ClipboardData(text: jsonEncode(data))
+                                                  );
+                                                  ScaffoldMessenger.of(context).showSnackBar(
+                                                    SnackBar(content: Text('Copied to Clipboard!')),
+                                                  );
+                                                } catch (e) {
+                                                  ScaffoldMessenger.of(context).showSnackBar(
+                                                    SnackBar(content: Text('Failed to copy to clipboard.')),
+                                                  );
+                                                  _log.error(e);
+                                                }
+                                                  
+                                              }, 
+                                              child: Text('Copy dump to json (without dg2)')
+                                            ),
+                                            ElevatedButton(
+                                              onPressed: () async {
+                                                try {
+                                                  if (_mrtdData == null) return;
+                                                  final data = mrtdDump(excludeDg2: false);
+                                                  _log.debug("Json dump: ${jsonEncode(data)}");
+                                                  await Clipboard.setData(
+                                                      ClipboardData(text: jsonEncode(data))
+                                                  );
+                                                  ScaffoldMessenger.of(context).showSnackBar(
+                                                    SnackBar(content: Text('Copied to Clipboard!')),
+                                                  );
+                                                } catch (e) {
+                                                  ScaffoldMessenger.of(context).showSnackBar(
+                                                    SnackBar(content: Text('Failed to copy to clipboard.')),
+                                                  );
+                                                  _log.error(e);
+                                                }
+                                                  
+                                              }, 
+                                              child: Text('Copy dump to json (only dg2)')
+                                            ),
+                                      ],
+                                    )
                                   ]),
                             ),
                           ]))))));

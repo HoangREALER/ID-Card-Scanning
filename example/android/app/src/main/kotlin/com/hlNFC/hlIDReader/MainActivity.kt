@@ -1,4 +1,4 @@
-package com.example.example
+package com.hlNFC.hlIDReader
 
 import io.flutter.embedding.android.FlutterActivity
 

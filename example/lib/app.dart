@@ -292,7 +292,7 @@ class _HomePageScanState extends State<HomePageScan> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("BShield ID card verifier"),
+        title: Text("Em Hoàng\'s ID card verifier"),
       ),
       body: Center(
         child: defaultTargetPlatform == TargetPlatform.android
@@ -458,14 +458,14 @@ class _HomePageTypeinState extends State<HomePageTypein> {
   @override
   Widget build(BuildContext context) {
     final TextEditingController controller1 =
-        TextEditingController(text: "083203011953");
+        TextEditingController(text: "079202024170");
     final TextEditingController controller2 =
-        TextEditingController(text: "16052003");
+        TextEditingController(text: "17042002");
     final TextEditingController controller3 =
-        TextEditingController(text: "16052028");
+        TextEditingController(text: "17042027");
     return Scaffold(
         appBar: AppBar(
-          title: Text("BShield ID card verifier"),
+          title: Text("Em Hoàng\'s ID card verifier"),
         ),
         body: Padding(
           padding: EdgeInsets.all(15),
